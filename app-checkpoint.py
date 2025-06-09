@@ -15,7 +15,7 @@ st.set_page_config(page_title="University Admission Analysis", layout="wide")
 
 # Define paths
 BASE_DIR = r"C:\Users\HP\Desktop\Project _UAP\university_admission_predictor"
-MODEL_PATH = os.path.join(BASE_DIR, "model_with_features.pkl")
+MODEL_PATH = MODEL_PATH = "model_with_features.pkl"
 
 # Load the model, scaler, and features
 @st.cache_resource
