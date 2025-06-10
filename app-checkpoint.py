@@ -16,52 +16,48 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
 st.set_page_config(page_title="University Admission Analysis", layout="wide")
 
 # =============================================
-# PATH HANDLING WITH ROBUST ERROR CHECKING
+# PATH HANDLING - UPDATED FOR YOUR SPECIFIC STRUCTURE
 # =============================================
 def setup_paths():
-    """Handle file paths with comprehensive error checking"""
+    """Handle file paths for your specific directory structure"""
     try:
-        # Get the directory where the script is running
-        if getattr(sys, 'frozen', False):
-            BASE_DIR = Path(sys.executable).parent
-        else:
-            BASE_DIR = Path(__file__).parent
+        # Get the base directory (Project _UAP)
+        BASE_DIR = Path(r"C:\Users\HP\Desktop\Project _UAP")
+        
+        # Define the subdirectory where your files are
+        SUB_DIR = BASE_DIR / "university_admission_predictor"
+        
+        # Define file paths
+        MODEL_PATH = SUB_DIR / "model_with_features.pkl"
+        DATA_PATH = SUB_DIR / "university_admission.csv"
 
-        # Define file names
-        MODEL_FILENAME = "model_with_features.pkl"
-        DATA_FILENAME = "university_admission.csv"
-
-        # Create paths
-        MODEL_PATH = BASE_DIR / MODEL_FILENAME
-        DATA_PATH = BASE_DIR / DATA_FILENAME
-
-        # Debug output
-        st.sidebar.markdown("### Path Diagnostics")
-        st.sidebar.write(f"Script running from: {BASE_DIR}")
-        st.sidebar.write(f"Model path: {MODEL_PATH}")
-        st.sidebar.write(f"Data path: {DATA_PATH}")
+        # Verify the subdirectory exists
+        if not SUB_DIR.exists():
+            raise FileNotFoundError(
+                f"Subdirectory not found: {SUB_DIR}\n"
+                f"Please ensure the 'university_admission_predictor' folder exists inside Project _UAP"
+            )
 
         # Verify files exist
         if not MODEL_PATH.exists():
-            available_files = "\n".join(os.listdir(BASE_DIR))
             raise FileNotFoundError(
-                f"Model file not found at {MODEL_PATH}\n"
-                f"Files in directory:\n{available_files}"
+                f"Model file not found at: {MODEL_PATH}\n"
+                f"Files in subdirectory:\n{os.listdir(SUB_DIR)}"
             )
 
         if not DATA_PATH.exists():
-            raise FileNotFoundError(f"Data file not found at {DATA_PATH}")
+            raise FileNotFoundError(f"Data file not found at: {DATA_PATH}")
 
-        return BASE_DIR, MODEL_PATH, DATA_PATH
+        return MODEL_PATH, DATA_PATH
 
     except Exception as e:
         st.error(f"Path setup failed: {str(e)}")
         st.stop()
 
-BASE_DIR, MODEL_PATH, DATA_PATH = setup_paths()
+MODEL_PATH, DATA_PATH = setup_paths()
 
 # =============================================
-# MODEL LOADING WITH VALIDATION
+# REST OF YOUR APPLICATION CODE (UNCHANGED)
 # =============================================
 @st.cache_resource
 def load_model_data():
@@ -255,11 +251,11 @@ elif page == "Model Predictions":
             
             # Interpretation
             if proba > 0.8:
-                st.success("🎉 Excellent chance of admission (>80%)")
+                st.success(" Excellent chance of admission (>80%)")
             elif proba > 0.6:
-                st.warning("👍 Good chance of admission (60-80%)")
+                st.warning(" Good chance of admission (60-80%)")
             else:
-                st.error("⚠️ Lower chance of admission (<60%)")
+                st.error(" Lower chance of admission (<60%)")
                 
         except Exception as e:
             st.error(f"Prediction failed: {str(e)}")
