@@ -11,16 +11,14 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                            f1_score, confusion_matrix, classification_report,
                            roc_curve, auc, roc_auc_score, ConfusionMatrixDisplay)
 
-# Set consistent style
-plt.style.use('seaborn')
-sns.set_palette("Blues_d")
-sns.set_style("whitegrid")
+# Set consistent style using modern seaborn API
+sns.set_theme(style="whitegrid", palette="Blues")
 
 # Set page configuration
 st.set_page_config(page_title="University Admission Analysis", layout="wide")
 
-# Define paths
-BASE_DIR = r"C:\Users\HP\Desktop\Project _UAP\university_admission_predictor"
+# Define paths (use forward slashes for cross-platform compatibility)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "model_with_features.pkl")
 DATA_PATH = os.path.join(BASE_DIR, "university_admission.csv")
 
@@ -147,7 +145,7 @@ if page == "Home":
     }
     
     # Display as table
-    st.table(pd.DataFrame(classification_data))
+    st.dataframe(pd.DataFrame(classification_data), hide_index=True)
     
     st.markdown("""
     #### Key Observations:
@@ -215,37 +213,34 @@ elif page == "EDA":
             st.dataframe(df.describe())
         
         st.subheader("Data Distribution")
-        with st.expander("Feature Distributions"):
-            selected_col = st.selectbox("Select feature", df.columns)
-            fig, ax = plt.subplots()
-            sns.histplot(df[selected_col], kde=True, bins=20, ax=ax)
-            st.pyplot(fig)
+        selected_col = st.selectbox("Select feature", df.columns)
+        fig, ax = plt.subplots()
+        sns.histplot(df[selected_col], kde=True, bins=20, ax=ax)
+        st.pyplot(fig)
         
         st.subheader("Relationships")
-        with st.expander("Scatter Plots"):
-            col1, col2 = st.columns(2)
-            with col1:
-                x_axis = st.selectbox("X-axis feature", df.columns, index=0)
-            with col2:
-                y_axis = st.selectbox("Y-axis feature", df.columns, 
-                                     index=df.columns.get_loc('Admission_Chance'))
-            
-            fig, ax = plt.subplots()
-            sns.scatterplot(data=df, x=x_axis, y=y_axis, hue='Admission_Chance', ax=ax)
-            st.pyplot(fig)
+        col1, col2 = st.columns(2)
+        with col1:
+            x_axis = st.selectbox("X-axis feature", df.columns, index=0)
+        with col2:
+            y_axis = st.selectbox("Y-axis feature", df.columns, 
+                                 index=df.columns.get_loc('Admission_Chance'))
         
-        with st.expander("Category Analysis"):
-            cat_feature = st.selectbox("Select categorical feature", 
-                                     ['University_Rating', 'Research', 'SOP'])
-            fig, ax = plt.subplots()
-            sns.boxplot(data=df, x=cat_feature, y='Admission_Chance', ax=ax)
-            st.pyplot(fig)
+        fig, ax = plt.subplots()
+        sns.scatterplot(data=df, x=x_axis, y=y_axis, hue='Admission_Chance', ax=ax)
+        st.pyplot(fig)
+        
+        st.subheader("Category Analysis")
+        cat_feature = st.selectbox("Select categorical feature", 
+                                 ['University_Rating', 'Research', 'SOP'])
+        fig, ax = plt.subplots()
+        sns.boxplot(data=df, x=cat_feature, y='Admission_Chance', ax=ax)
+        st.pyplot(fig)
         
         st.subheader("Correlation Analysis")
-        with st.expander("Correlation Heatmap"):
-            fig, ax = plt.subplots(figsize=(10,8))
-            sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
-            st.pyplot(fig)
+        fig, ax = plt.subplots(figsize=(10,8))
+        sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt=".2f", ax=ax)
+        st.pyplot(fig)
 
 elif page == "Model Predictions":
     st.title("Admission Predictions")
@@ -258,12 +253,12 @@ elif page == "Model Predictions":
             with col1:
                 gre_score = st.slider("GRE Score (260-340)", 260, 340, 310)
                 toefl_score = st.slider("TOEFL Score (90-120)", 90, 120, 105)
-                university_rating = st.slider("University Rating (1-5)", 1, 5, 3)
+                # university_rating = st.slider("University Rating (1-5)", 1, 5, 3)
             with col2:
                 sop = st.slider("SOP Strength (1-5)", 1, 5, 3)
                 lor = st.slider("LOR Strength (1-5)", 1, 5, 3)
                 cgpa = st.slider("CGPA (6.0-10.0)", 6.0, 10.0, 8.5)
-                research = st.selectbox("Research Experience", [0, 1])
+                # research = st.selectbox("Research Experience", [0, 1])
             
             submitted = st.form_submit_button("Predict Admission Probability")
         
@@ -271,11 +266,11 @@ elif page == "Model Predictions":
             input_data = pd.DataFrame({
                 'GRE_Score': [gre_score],
                 'TOEFL_Score': [toefl_score],
-                'University_Rating': [university_rating],
+                # 'University_Rating': [university_rating],
                 'SOP': [sop],
                 'LOR': [lor],
                 'CGPA': [cgpa],
-                'Research': [research]
+                # 'Research': [research]
             })[features]  # Ensure correct feature order
             
             input_scaled = scaler.transform(input_data)
@@ -288,7 +283,7 @@ elif page == "Model Predictions":
             st.subheader("Prediction Results")
             fig, ax = plt.subplots(figsize=(8, 1))
             ax.barh(['Admission Chance'], [1], color='lightgray')
-            ax.barh(['Admission Chance'], [proba], color='#1f77b4')
+            ax.barh(['Admission Chance'], [proba], color=sns.color_palette()[0])
             ax.set_xlim(0, 1)
             ax.set_title(f"Admission Probability: {proba:.1%}")
             ax.set_xticks([])
