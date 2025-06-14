@@ -1,7 +1,3 @@
-# University Admission Prediction System
-# Author: [Your Name]
-# Date: [Current Date]
-# Description: A Streamlit application for analyzing and predicting university admission chances
 
 import streamlit as st
 import pandas as pd
