@@ -193,8 +193,6 @@ if page == "Home":
     ```bash
     streamlit run app.py
     ```
-
-    *Note: Predictions are based on historical patterns. Actual decisions may involve additional qualitative factors.*
     """)
     
     # Add some space at the bottom
